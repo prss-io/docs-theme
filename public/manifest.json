@@ -1,0 +1,186 @@
+{
+  "title": "Docs",
+  "type": "docs",
+  "parser": "react",
+  "isSSR": true,
+  "combinedCSS": true,
+  "clientScript": true,
+  "siteVars": {
+    "logoImageUrl": {
+      "type": "image",
+      "label": "Logo image",
+      "group": "Branding",
+      "help": "Shown in the top-left of the header. Leave empty to use the site title."
+    },
+    "tagline": {
+      "type": "string",
+      "label": "Tagline",
+      "group": "Branding",
+      "help": "Short line shown under the logo on the home page."
+    },
+    "githubUrl": {
+      "type": "url",
+      "label": "GitHub URL",
+      "group": "Navigation",
+      "placeholder": "https://github.com/you/project",
+      "help": "Adds a GitHub icon link to the header."
+    },
+    "headerMenu": {
+      "type": "string",
+      "label": "Header menu",
+      "group": "Navigation",
+      "help": "Name of the menu used for the top header links. Optional."
+    },
+    "sidebarMenu": {
+      "type": "string",
+      "label": "Sidebar menu (override)",
+      "group": "Navigation",
+      "help": "Advanced: force a specific menu in the docs sidebar. Leave empty to build the sidebar automatically from your pages."
+    },
+    "editBaseUrl": {
+      "type": "url",
+      "label": "\"Edit this page\" base URL",
+      "group": "Navigation",
+      "help": "Base URL used to build the edit link under each docs page. Optional."
+    },
+    "heroTitle": {
+      "type": "string",
+      "label": "Headline",
+      "group": "Home hero",
+      "help": "Large heading at the top of the home page."
+    },
+    "heroMessage": {
+      "type": "longtext",
+      "label": "Sub-heading",
+      "group": "Home hero",
+      "help": "Supporting sentence shown under the headline."
+    },
+    "heroPrimaryText": {
+      "type": "string",
+      "label": "Primary button text",
+      "group": "Home hero",
+      "placeholder": "Get started"
+    },
+    "heroPrimaryUrl": {
+      "type": "url",
+      "label": "Primary button link",
+      "group": "Home hero"
+    },
+    "heroSecondaryText": {
+      "type": "string",
+      "label": "Secondary button text",
+      "group": "Home hero",
+      "placeholder": "View on GitHub"
+    },
+    "heroSecondaryUrl": {
+      "type": "url",
+      "label": "Secondary button link",
+      "group": "Home hero"
+    },
+    "heroImageUrl": {
+      "type": "image",
+      "label": "Hero image",
+      "group": "Home hero",
+      "help": "Optional image shown beside the hero text."
+    },
+    "asideHtml": {
+      "type": "html",
+      "label": "Sidebar ad / sponsor",
+      "group": "Ads & sponsors",
+      "help": "Paste an AdSense, Carbon Ads, or sponsor snippet. It appears in the right rail on docs pages."
+    },
+    "contentFooterHtml": {
+      "type": "html",
+      "label": "Below-content HTML",
+      "group": "Ads & sponsors",
+      "help": "Shown under every page's content — good for a newsletter box, banner ad, or reusable block."
+    },
+    "warningHtml": {
+      "type": "html",
+      "label": "Warning banner",
+      "group": "Content",
+      "help": "Optional highlighted banner shown above the content (e.g. \"This is a beta.\")."
+    },
+    "embedUrl": {
+      "type": "url",
+      "label": "Embed URL",
+      "group": "Demo / embed",
+      "help": "On a Demo page, this URL is shown in a large full-width iframe (live demo, sandbox, editor…)."
+    },
+    "embedHeight": {
+      "type": "string",
+      "label": "Embed height (px)",
+      "group": "Demo / embed",
+      "placeholder": "640"
+    },
+    "embedTitle": {
+      "type": "string",
+      "label": "Embed title",
+      "group": "Demo / embed",
+      "help": "Accessible title for the embedded iframe."
+    },
+    "footerCta": {
+      "type": "html",
+      "label": "Footer call-to-action",
+      "group": "Footer",
+      "help": "Optional highlighted row shown above the footer."
+    },
+    "footerLeft": {
+      "type": "html",
+      "label": "Footer — left",
+      "group": "Footer"
+    },
+    "footerRight": {
+      "type": "html",
+      "label": "Footer — right",
+      "group": "Footer"
+    },
+    "metaDescription": {
+      "type": "longtext",
+      "label": "Meta description",
+      "group": "SEO",
+      "help": "Default description used by search engines and social cards."
+    },
+    "metaTitle": {
+      "type": "string",
+      "label": "Meta title (Open Graph)",
+      "group": "SEO",
+      "help": "Overrides the social/search title. Defaults to the page title."
+    },
+    "metaImage": {
+      "type": "image",
+      "label": "Social share image",
+      "group": "SEO",
+      "help": "og:image / Twitter card image. Defaults to the page's featured image."
+    },
+    "metaSiteName": {
+      "type": "string",
+      "label": "Site name (Open Graph)",
+      "group": "SEO",
+      "help": "og:site_name. Defaults to the site title."
+    },
+    "metaUrl": {
+      "type": "url",
+      "label": "Canonical URL",
+      "group": "SEO",
+      "help": "Sets the canonical link and og:url."
+    },
+    "metaLocale": {
+      "type": "string",
+      "label": "Locale",
+      "group": "SEO",
+      "placeholder": "en_US"
+    },
+    "metaRobots": {
+      "type": "string",
+      "label": "Robots directive",
+      "group": "SEO",
+      "placeholder": "index, follow"
+    },
+    "faviconImageUrl": {
+      "type": "image",
+      "label": "Favicon",
+      "group": "SEO"
+    }
+  }
+}

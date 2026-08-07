@@ -1,0 +1,7 @@
+node_modules
+.vscode
+/coverage
+
+# Internal working notes must never land in this public repo
+.agents
+*-STANDARDS.md

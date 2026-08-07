@@ -1,0 +1,406 @@
+{
+  "name": "@prss/docs-theme",
+  "title": "Docs",
+  "version": "1.0.0",
+  "author": "Francisco Hodge",
+  "homepage": "https://github.com/prss-io/docs-theme",
+  "description": "Documentation theme for PRSS with an automatic sidebar, on-this-page navigation, copyable code blocks and a light/dark toggle.",
+  "license": "MIT",
+  "type": "docs",
+  "parser": "react",
+  "siteVars": {
+    "logoImageUrl": {
+      "type": "image",
+      "label": "Logo image",
+      "group": "Branding",
+      "help": "Shown in the top-left of the header. Leave empty to use the site title."
+    },
+    "tagline": {
+      "type": "string",
+      "label": "Tagline",
+      "group": "Branding",
+      "help": "Short line shown under the logo on the home page."
+    },
+    "githubUrl": {
+      "type": "url",
+      "label": "GitHub URL",
+      "group": "Navigation",
+      "placeholder": "https://github.com/you/project",
+      "help": "Adds a GitHub icon link to the header."
+    },
+    "headerMenu": {
+      "type": "string",
+      "label": "Header menu",
+      "group": "Navigation",
+      "help": "Name of the menu used for the top header links. Optional."
+    },
+    "sidebarMenu": {
+      "type": "string",
+      "label": "Sidebar menu (override)",
+      "group": "Navigation",
+      "help": "Advanced: force a specific menu in the docs sidebar. Leave empty to build the sidebar automatically from your pages."
+    },
+    "editBaseUrl": {
+      "type": "url",
+      "label": "\"Edit this page\" base URL",
+      "group": "Navigation",
+      "help": "Base URL used to build the edit link under each docs page. Optional."
+    },
+    "heroTitle": {
+      "type": "string",
+      "label": "Headline",
+      "group": "Home hero",
+      "help": "Large heading at the top of the home page."
+    },
+    "heroMessage": {
+      "type": "longtext",
+      "label": "Sub-heading",
+      "group": "Home hero",
+      "help": "Supporting sentence shown under the headline."
+    },
+    "heroPrimaryText": {
+      "type": "string",
+      "label": "Primary button text",
+      "group": "Home hero",
+      "placeholder": "Get started"
+    },
+    "heroPrimaryUrl": {
+      "type": "url",
+      "label": "Primary button link",
+      "group": "Home hero"
+    },
+    "heroSecondaryText": {
+      "type": "string",
+      "label": "Secondary button text",
+      "group": "Home hero",
+      "placeholder": "View on GitHub"
+    },
+    "heroSecondaryUrl": {
+      "type": "url",
+      "label": "Secondary button link",
+      "group": "Home hero"
+    },
+    "heroImageUrl": {
+      "type": "image",
+      "label": "Hero image",
+      "group": "Home hero",
+      "help": "Optional image shown beside the hero text."
+    },
+    "asideHtml": {
+      "type": "html",
+      "label": "Sidebar ad / sponsor",
+      "group": "Ads & sponsors",
+      "help": "Paste an AdSense, Carbon Ads, or sponsor snippet. It appears in the right rail on docs pages."
+    },
+    "contentFooterHtml": {
+      "type": "html",
+      "label": "Below-content HTML",
+      "group": "Ads & sponsors",
+      "help": "Shown under every page's content — good for a newsletter box, banner ad, or reusable block."
+    },
+    "warningHtml": {
+      "type": "html",
+      "label": "Warning banner",
+      "group": "Content",
+      "help": "Optional highlighted banner shown above the content (e.g. \"This is a beta.\")."
+    },
+    "embedUrl": {
+      "type": "url",
+      "label": "Embed URL",
+      "group": "Demo / embed",
+      "help": "On a Demo page, this URL is shown in a large full-width iframe (live demo, sandbox, editor…)."
+    },
+    "embedHeight": {
+      "type": "string",
+      "label": "Embed height (px)",
+      "group": "Demo / embed",
+      "placeholder": "640"
+    },
+    "embedTitle": {
+      "type": "string",
+      "label": "Embed title",
+      "group": "Demo / embed",
+      "help": "Accessible title for the embedded iframe."
+    },
+    "footerCta": {
+      "type": "html",
+      "label": "Footer call-to-action",
+      "group": "Footer",
+      "help": "Optional highlighted row shown above the footer."
+    },
+    "footerLeft": {
+      "type": "html",
+      "label": "Footer — left",
+      "group": "Footer"
+    },
+    "footerRight": {
+      "type": "html",
+      "label": "Footer — right",
+      "group": "Footer"
+    },
+    "metaDescription": {
+      "type": "longtext",
+      "label": "Meta description",
+      "group": "SEO",
+      "help": "Default description used by search engines and social cards."
+    },
+    "metaTitle": {
+      "type": "string",
+      "label": "Meta title (Open Graph)",
+      "group": "SEO",
+      "help": "Overrides the social/search title. Defaults to the page title."
+    },
+    "metaImage": {
+      "type": "image",
+      "label": "Social share image",
+      "group": "SEO",
+      "help": "og:image / Twitter card image. Defaults to the page's featured image."
+    },
+    "metaSiteName": {
+      "type": "string",
+      "label": "Site name (Open Graph)",
+      "group": "SEO",
+      "help": "og:site_name. Defaults to the site title."
+    },
+    "metaUrl": {
+      "type": "url",
+      "label": "Canonical URL",
+      "group": "SEO",
+      "help": "Sets the canonical link and og:url."
+    },
+    "metaLocale": {
+      "type": "string",
+      "label": "Locale",
+      "group": "SEO",
+      "placeholder": "en_US"
+    },
+    "metaRobots": {
+      "type": "string",
+      "label": "Robots directive",
+      "group": "SEO",
+      "placeholder": "index, follow"
+    },
+    "faviconImageUrl": {
+      "type": "image",
+      "label": "Favicon",
+      "group": "SEO"
+    }
+  },
+  "templates": [
+    "blog",
+    "demo",
+    "docs",
+    "home",
+    "page",
+    "post",
+    "showcase"
+  ],
+  "isSSR": true,
+  "combinedCSS": true,
+  "clientScript": true,
+  "sampleContent": {
+    "vars": {
+      "headerMenu": "header",
+      "githubUrl": "https://github.com/prss-io",
+      "footerLeft": "Built with <a href=\"https://prss.io\" target=\"_blank\" rel=\"noopener\">PRSS</a>.",
+      "footerCta": "Like this theme? <a href=\"https://github.com/prss-io\" target=\"_blank\" rel=\"noopener\">Star it on GitHub</a> to follow along.",
+      "asideHtml": "<strong style=\"display:block;color:var(--text);margin-bottom:6px\">Sponsored</strong>Your ad here. Paste an AdSense, Carbon, or sponsor snippet in <em>Theme settings → Ads &amp; sponsors</em>.",
+      "contentFooterHtml": "<div style=\"text-align:center\"><strong style=\"display:block;font-size:16px;color:var(--text);margin-bottom:6px\">Enjoying the docs?</strong><span>Drop a newsletter form, banner, or reusable block here — no code required.</span></div>"
+    },
+    "header": [
+      "gs-intro",
+      "blog",
+      "projects",
+      "demo",
+      "components"
+    ],
+    "tree": [
+      {
+        "ref": "home",
+        "title": "Home",
+        "slug": "home",
+        "template": "home",
+        "vars": {
+          "heroTitle": "Beautiful documentation, built in minutes",
+          "heroMessage": "A clean, fast, dark-first docs theme for PRSS. Grouped sidebar navigation, an on-page table of contents, copyable code blocks, and callouts — everything you need to write great docs.",
+          "heroPrimaryText": "Get started",
+          "heroPrimaryUrl": "getting-started/introduction",
+          "heroSecondaryText": "Browse components",
+          "heroSecondaryUrl": "components/gradient-glow"
+        },
+        "content": "<div class=\"docs-cards\"><div class=\"docs-card\"><h3>Fast to write</h3><p>Every page is a normal PRSS page. Type, drop in a code block or a callout, and publish.</p></div><div class=\"docs-card\"><h3>Organized</h3><p>Group pages into sections. The sidebar and previous/next links are generated for you.</p></div><div class=\"docs-card\"><h3>Reader-friendly</h3><p>An automatic “On this page” outline, dark mode, and a keyboard-accessible layout.</p></div></div>",
+        "children": [
+          {
+            "ref": "gs",
+            "title": "Getting Started",
+            "slug": "getting-started",
+            "template": "docs",
+            "content": "<p>Everything you need to stand up a documentation site with PRSS. Start with the introduction, then install and ship your first page.</p>",
+            "children": [
+              {
+                "ref": "gs-intro",
+                "title": "Introduction",
+                "slug": "introduction",
+                "template": "docs",
+                "content": "<p>This starter is a fully working documentation site. Edit these pages, add your own, and organize them into sections — the navigation, table of contents, and previous/next links all update automatically.</p><h2>What you get</h2><ul><li><strong>Grouped sidebar</strong> generated from your site structure.</li><li><strong>On-page outline</strong> built from the headings you write.</li><li><strong>Code blocks</strong> with one-click copy.</li><li><strong>Callouts</strong> for notes, tips, and warnings.</li></ul><div class=\"callout\" data-type=\"info\"><strong>Tip:</strong> Every item in the sidebar is just a page. Add a page under a section and it appears here instantly.</div><h2>How pages are organized</h2><p>Sections are pages that contain other pages. The theme renders the top level of your structure as sidebar groups and their children as links.</p><h2>Next steps</h2><p>Head to <a href=\"../getting-started/installation\">Installation</a> to learn how to add and arrange pages.</p>"
+              },
+              {
+                "ref": "gs-install",
+                "title": "Installation",
+                "slug": "installation",
+                "template": "docs",
+                "content": "<p>You don't install anything to use this theme — it ships with PRSS. This page shows how to add content.</p><h2>Add a page</h2><p>Create a new page and place it under a section to make it appear in the sidebar.</p><div data-block-id=\"block-rkb2l1x7z\" data-block=\"json\" data-specialized-type=\"code-block\" data-content=\"{&quot;id&quot;:&quot;block-rkb2l1x7z&quot;,&quot;type&quot;:&quot;json&quot;,&quot;content&quot;:{&quot;type&quot;:&quot;json&quot;,&quot;fields&quot;:{&quot;title&quot;:&quot;&quot;,&quot;description&quot;:&quot;&quot;,&quot;code&quot;:&quot;# In PRSS: Posts → Create → choose a parent section\\n# Or set the parent later from the structure editor&quot;,&quot;language&quot;:&quot;bash&quot;,&quot;theme&quot;:&quot;dark&quot;,&quot;showLineNumbers&quot;:&quot;false&quot;,&quot;showCopyButton&quot;:&quot;true&quot;,&quot;showHeader&quot;:&quot;true&quot;}},&quot;specializedType&quot;:&quot;code-block&quot;}\" class=\"json-block\"></div><h2>Write with blocks or HTML</h2><p>Use the editor's headings, lists, code, and callout blocks. Headings become entries in the “On this page” outline.</p><div class=\"callout\" data-type=\"warning\"><strong>Heads up:</strong> Keep one <code>h1</code> per page (the title is added for you) and use <code>h2</code>/<code>h3</code> for sections.</div>"
+              },
+              {
+                "ref": "gs-quickstart",
+                "title": "Quick Start",
+                "slug": "quick-start",
+                "template": "docs",
+                "content": "<p>Publish your first documented feature in three steps.</p><h2>1. Create a section</h2><p>Add a page named after your topic (for example, “Guides”). It becomes a sidebar group.</p><h2>2. Add pages under it</h2><p>Create child pages for each article. They appear as links under the group.</p><div data-block-id=\"block-dkme6wxwf\" data-block=\"json\" data-specialized-type=\"code-block\" data-content=\"{&quot;id&quot;:&quot;block-dkme6wxwf&quot;,&quot;type&quot;:&quot;json&quot;,&quot;content&quot;:{&quot;type&quot;:&quot;json&quot;,&quot;fields&quot;:{&quot;title&quot;:&quot;&quot;,&quot;description&quot;:&quot;&quot;,&quot;code&quot;:&quot;export function greet(name: string) {\\n  return `Hello, ${name}!`;\\n}&quot;,&quot;language&quot;:&quot;tsx&quot;,&quot;theme&quot;:&quot;dark&quot;,&quot;showLineNumbers&quot;:&quot;false&quot;,&quot;showCopyButton&quot;:&quot;true&quot;,&quot;showHeader&quot;:&quot;true&quot;}},&quot;specializedType&quot;:&quot;code-block&quot;}\" class=\"json-block\"></div><h2>3. Preview and deploy</h2><p>Use PRSS preview to review, then deploy to your host of choice.</p><div class=\"callout\" data-type=\"success\"><strong>Done!</strong> Your docs site is live with working navigation and search-friendly pages.</div>"
+              }
+            ]
+          },
+          {
+            "ref": "components",
+            "title": "Components",
+            "slug": "components",
+            "template": "docs",
+            "content": "<p>Reusable content patterns you can drop into any page: callouts, code blocks, tables, and more.</p>",
+            "children": [
+              {
+                "ref": "comp-ai",
+                "title": "Gradient Glow",
+                "slug": "gradient-glow",
+                "template": "docs",
+                "content": "<p>An animated, gradient “intelligence” banner — a showcase component that demonstrates how rich documentation pages can look.</p><h2>Preview</h2><div class=\"docs-demo\"><div class=\"ai-glow\">Gradient Glow</div></div><h2>Installation</h2><p>Add the markup and styles to any page.</p><div data-block-id=\"block-h4wetmmiu\" data-block=\"json\" data-specialized-type=\"code-block\" data-content=\"{&quot;id&quot;:&quot;block-h4wetmmiu&quot;,&quot;type&quot;:&quot;json&quot;,&quot;content&quot;:{&quot;type&quot;:&quot;json&quot;,&quot;fields&quot;:{&quot;title&quot;:&quot;&quot;,&quot;description&quot;:&quot;&quot;,&quot;code&quot;:&quot;\\u003cdiv class=\\&quot;ai-glow\\&quot;\\u003eGradient Glow\\u003c/div\\u003e&quot;,&quot;language&quot;:&quot;html&quot;,&quot;theme&quot;:&quot;dark&quot;,&quot;showLineNumbers&quot;:&quot;false&quot;,&quot;showCopyButton&quot;:&quot;true&quot;,&quot;showHeader&quot;:&quot;true&quot;}},&quot;specializedType&quot;:&quot;code-block&quot;}\" class=\"json-block\"></div><h2>Usage</h2><div data-block-id=\"block-v5znntzsw\" data-block=\"json\" data-specialized-type=\"code-block\" data-content=\"{&quot;id&quot;:&quot;block-v5znntzsw&quot;,&quot;type&quot;:&quot;json&quot;,&quot;content&quot;:{&quot;type&quot;:&quot;json&quot;,&quot;fields&quot;:{&quot;title&quot;:&quot;&quot;,&quot;description&quot;:&quot;&quot;,&quot;code&quot;:&quot;import { GradientGlow } from \\&quot;@/components/gradient-glow\\&quot;;\\n\\nexport default function Page() {\\n  return \\u003cGradientGlow label=\\&quot;Gradient Glow\\&quot; /\\u003e;\\n}&quot;,&quot;language&quot;:&quot;tsx&quot;,&quot;theme&quot;:&quot;dark&quot;,&quot;showLineNumbers&quot;:&quot;false&quot;,&quot;showCopyButton&quot;:&quot;true&quot;,&quot;showHeader&quot;:&quot;true&quot;}},&quot;specializedType&quot;:&quot;code-block&quot;}\" class=\"json-block\"></div><h2>Props</h2><table><thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody><tr><td><code>label</code></td><td><code>string</code></td><td>—</td><td>Text shown inside the glow.</td></tr><tr><td><code>speed</code></td><td><code>number</code></td><td><code>6</code></td><td>Animation duration in seconds.</td></tr></tbody></table><div class=\"callout\" data-type=\"info\"><strong>Note:</strong> This component is for illustration. Swap it for your own showcase.</div>"
+              },
+              {
+                "ref": "comp-button",
+                "title": "Button",
+                "slug": "button",
+                "template": "docs",
+                "content": "<p>Documenting a component follows the same shape every time: preview, installation, usage, and props.</p><h2>Preview</h2><div class=\"docs-demo\"><button class=\"demo-btn\">Click me</button></div><h2>Usage</h2><div data-block-id=\"block-kly3k9zhe\" data-block=\"json\" data-specialized-type=\"code-block\" data-content=\"{&quot;id&quot;:&quot;block-kly3k9zhe&quot;,&quot;type&quot;:&quot;json&quot;,&quot;content&quot;:{&quot;type&quot;:&quot;json&quot;,&quot;fields&quot;:{&quot;title&quot;:&quot;&quot;,&quot;description&quot;:&quot;&quot;,&quot;code&quot;:&quot;\\u003cButton variant=\\&quot;primary\\&quot;\\u003eClick me\\u003c/Button\\u003e&quot;,&quot;language&quot;:&quot;tsx&quot;,&quot;theme&quot;:&quot;dark&quot;,&quot;showLineNumbers&quot;:&quot;false&quot;,&quot;showCopyButton&quot;:&quot;true&quot;,&quot;showHeader&quot;:&quot;true&quot;}},&quot;specializedType&quot;:&quot;code-block&quot;}\" class=\"json-block\"></div><h2>Variants</h2><ul><li><code>primary</code> — the main call to action.</li><li><code>secondary</code> — lower emphasis.</li><li><code>ghost</code> — minimal, for toolbars.</li></ul>"
+              }
+            ]
+          },
+          {
+            "ref": "guides",
+            "title": "Guides",
+            "slug": "guides",
+            "template": "docs",
+            "content": "<p>Task-focused walkthroughs for common documentation needs.</p>",
+            "children": [
+              {
+                "ref": "guides-theming",
+                "title": "Theming",
+                "slug": "theming",
+                "template": "docs",
+                "content": "<p>The theme is dark-first with a light mode toggle. Colors are driven by CSS variables so you can rebrand quickly.</p><h2>Brand color</h2><div data-block-id=\"block-1axjpwev0\" data-block=\"json\" data-specialized-type=\"code-block\" data-content=\"{&quot;id&quot;:&quot;block-1axjpwev0&quot;,&quot;type&quot;:&quot;json&quot;,&quot;content&quot;:{&quot;type&quot;:&quot;json&quot;,&quot;fields&quot;:{&quot;title&quot;:&quot;&quot;,&quot;description&quot;:&quot;&quot;,&quot;code&quot;:&quot;:root {\\n  --docs-accent: #6366f1;\\n}&quot;,&quot;language&quot;:&quot;css&quot;,&quot;theme&quot;:&quot;dark&quot;,&quot;showLineNumbers&quot;:&quot;false&quot;,&quot;showCopyButton&quot;:&quot;true&quot;,&quot;showHeader&quot;:&quot;true&quot;}},&quot;specializedType&quot;:&quot;code-block&quot;}\" class=\"json-block\"></div><h2>Logo</h2><p>Set the <code>logoImageUrl</code> site variable to show a logo instead of the site title.</p>"
+              },
+              {
+                "ref": "guides-deploy",
+                "title": "Deployment",
+                "slug": "deployment",
+                "template": "docs",
+                "content": "<p>Ship your docs anywhere PRSS can deploy.</p><h2>Preview locally</h2><p>Use PRSS preview to review the built site before publishing.</p><h2>Publish</h2><p>Connect a host in Site Settings and deploy. Every build regenerates the sidebar and outline from your current pages.</p><div class=\"callout\" data-type=\"success\"><strong>Tip:</strong> Keep section names short — they become the sidebar group headers.</div>"
+              }
+            ]
+          },
+          {
+            "ref": "blog",
+            "title": "Blog",
+            "slug": "blog",
+            "template": "blog",
+            "content": "<p>Product news, release notes, and writing about building with PRSS.</p>",
+            "children": [
+              {
+                "ref": "post-1",
+                "title": "Introducing the PRSS Docs theme",
+                "slug": "introducing-the-docs-theme",
+                "template": "post",
+                "vars": {
+                  "excerpt": "A dark-first, structure-driven documentation theme — sidebar, table of contents, and previous/next all build themselves."
+                },
+                "content": "<p>Today we're shipping a documentation theme for PRSS that does the tedious parts for you. There are no menus to hand-build: the sidebar is derived from your site structure, and the on-page outline is built from your headings.</p><h2>Why structure-driven</h2><p>Most docs themes make you maintain a separate navigation file. This one reads your pages directly, so adding a page under a section is all it takes to see it in the nav.</p><h2>What's included</h2><p>Grouped sidebar, on-page TOC, copyable code blocks, callouts, a blog, and an automatic project showcase.</p>"
+              },
+              {
+                "ref": "post-2",
+                "title": "How auto-navigation works",
+                "slug": "how-auto-navigation-works",
+                "template": "post",
+                "vars": {
+                  "excerpt": "The sidebar, breadcrumbs, and previous/next links are generated from your content tree — no configuration required."
+                },
+                "content": "<p>When you build the site, the theme walks your structure to produce the sidebar. Deep product trees get their own scoped sidebar; a small docs set shows every section as a group.</p><h2>Previous and next</h2><p>The theme flattens the sidebar into reading order and links each page to its neighbours automatically.</p>"
+              },
+              {
+                "ref": "post-3",
+                "title": "Writing great docs with blocks",
+                "slug": "writing-great-docs-with-blocks",
+                "template": "post",
+                "vars": {
+                  "excerpt": "Callouts, code blocks, and tables you can drop into any page from the PRSS editor."
+                },
+                "content": "<p>Documentation lives and dies by its examples. Use code blocks for snippets, callouts for tips and warnings, and tables for options.</p><div class=\"callout\" data-type=\"tip\"><strong>Tip:</strong> Headings become entries in the “On this page” outline automatically.</div>"
+              }
+            ]
+          },
+          {
+            "ref": "projects",
+            "title": "Projects",
+            "slug": "projects",
+            "template": "showcase",
+            "content": "<p>A few things built with — and around — PRSS. Each card links to its own page.</p>",
+            "children": [
+              {
+                "ref": "proj-1",
+                "title": "Edge API",
+                "slug": "edge-api",
+                "template": "page",
+                "vars": {
+                  "badge": "Library",
+                  "excerpt": "A tiny framework for building APIs at the edge, with stateful storage built in."
+                },
+                "content": "<p>Edge API is a minimal framework for building fast, stateful APIs at the edge.</p>"
+              },
+              {
+                "ref": "proj-2",
+                "title": "UI Kit",
+                "slug": "ui-kit",
+                "template": "page",
+                "vars": {
+                  "badge": "Library",
+                  "excerpt": "A framework-agnostic component library — themeable, accessible and touch friendly."
+                },
+                "content": "<p>UI Kit is a small, themeable component library for the web.</p>"
+              },
+              {
+                "ref": "proj-3",
+                "title": "PRSS",
+                "slug": "prss",
+                "template": "page",
+                "vars": {
+                  "badge": "App",
+                  "excerpt": "The static site creator you're using right now — blog, docs, and showcases from one app."
+                },
+                "content": "<p>PRSS is a desktop static-site creator. This whole site was generated by it.</p>"
+              }
+            ]
+          },
+          {
+            "ref": "demo",
+            "title": "Live demo",
+            "slug": "demo",
+            "template": "demo",
+            "vars": {
+              "embedUrl": "https://stackblitz.com/edit/react?embed=1&file=src%2FApp.js&hideExplorer=1&hideNavigation=1",
+              "embedHeight": "620",
+              "embedTitle": "Live example"
+            },
+            "content": "<p>The <strong>Demo</strong> page type embeds a live sandbox, editor, or preview in a large full-width frame — perfect for interactive examples. Set the <em>Embed URL</em> in the page's settings; the theme handles the rest.</p>"
+          }
+        ]
+      }
+    ]
+  }
+}

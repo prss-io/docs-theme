@@ -1,0 +1,37 @@
+# dependencies
+/node_modules
+
+# testing
+/tests
+/coverage
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+/.github
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Development folders and files
+src
+scripts
+babel.config.js
+webpack.config.js
+clientScript.webpack.config.js
+*-STANDARDS.md
+README.md
+
+# Agent/editor/local tooling (never publish)
+.agents
+.vscode
+.prettierrc
+components.json
+eslint.config.mjs
+postcss.config.cjs
+tailwind.config.cjs
+tsconfig.json
