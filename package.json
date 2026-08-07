@@ -1,7 +1,7 @@
 {
   "name": "@prss/docs-theme",
   "title": "Docs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Documentation theme for PRSS with an automatic sidebar, on-this-page navigation, copyable code blocks and a light/dark toggle.",
   "main": "build/index.js",
   "scripts": {
