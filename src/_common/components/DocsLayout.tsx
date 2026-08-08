@@ -184,6 +184,19 @@ const DocsLayout = ({
           </nav>
 
           <div className="docs-header-right">
+            <button
+              type="button"
+              className="docs-search-trigger"
+              data-search-open
+              aria-label="Search"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              <span className="docs-search-trigger-label">Search</span>
+              <kbd className="docs-search-kbd">/</kbd>
+            </button>
             {githubUrl && (
               <a
                 className="docs-icon-btn"
@@ -216,6 +229,33 @@ const DocsLayout = ({
           </div>
         </div>
       </header>
+
+      {/* Populated by client.js on open; kept out of the SSR payload so every
+          page does not ship an empty result list. */}
+      <div className="docs-search" data-search-dialog hidden>
+        <div className="docs-search-backdrop" data-search-close />
+        <div className="docs-search-panel" role="dialog" aria-modal="true" aria-label="Search">
+          <div className="docs-search-field">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.35-4.35" />
+            </svg>
+            <input
+              type="search"
+              className="docs-search-input"
+              data-search-input
+              placeholder={`Search ${site.title || "docs"}`}
+              autoComplete="off"
+              spellCheck={false}
+              aria-label="Search"
+            />
+            <button type="button" className="docs-search-esc" data-search-close aria-label="Close">
+              Esc
+            </button>
+          </div>
+          <div className="docs-search-results" data-search-results />
+        </div>
+      </div>
 
       <div className={cx("docs-shell", !hasSidebar && "no-sidebar", !showRail && "no-toc")}>
         {hasSidebar && (

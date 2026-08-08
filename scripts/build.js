@@ -13,7 +13,7 @@ const buildFolder = path.resolve(__dirname, "../build");
 const manifestFile = path.resolve(__dirname, "../build/manifest.json");
 
 const { version, name, license, homepage, description, author = "" } = pkg;
-const { title, type, parser, siteVars, isSSR, combinedCSS, clientScript } = manifest;
+const { title, type, parser, siteVars, isSSR, combinedCSS, clientScript, search } = manifest;
 
 const run = (cfg) =>
   new Promise((resolve, reject) => {
@@ -75,6 +75,7 @@ const start = async () => {
     isSSR,
     combinedCSS,
     clientScript,
+    search,
     ...(sampleContent ? { sampleContent } : {})
   };
 

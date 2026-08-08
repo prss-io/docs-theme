@@ -287,12 +287,132 @@ const initHeroParallax = () => {
   window.addEventListener("resize", onScroll);
 };
 
+/* ---- Search (command palette over PRSS.search) ---- */
+const initSearch = () => {
+  const dialog = document.querySelector<HTMLElement>("[data-search-dialog]");
+  const input = document.querySelector<HTMLInputElement>("[data-search-input]");
+  const list = document.querySelector<HTMLElement>("[data-search-results]");
+  if (!dialog || !input || !list) return;
+
+  const prss = (window as any).PRSS;
+  // An older @prss/ui has no search; leaving the trigger would promise something
+  // the page cannot deliver.
+  if (!prss || typeof prss.search !== "function") {
+    document.querySelectorAll("[data-search-open]").forEach((el) => el.remove());
+    return;
+  }
+
+  let activeIndex = 0;
+  let queryToken = 0;
+
+  const options = () => Array.from(list.querySelectorAll<HTMLElement>(".docs-search-result"));
+
+  const highlight = () => {
+    options().forEach((el, i) => {
+      const on = i === activeIndex;
+      el.classList.toggle("is-active", on);
+      if (on) el.scrollIntoView({ block: "nearest" });
+    });
+  };
+
+  const open = () => {
+    dialog.hidden = false;
+    document.body.classList.add("docs-search-open");
+    input.focus();
+    input.select();
+  };
+
+  const close = () => {
+    dialog.hidden = true;
+    document.body.classList.remove("docs-search-open");
+  };
+
+  const escapeHtml = (value: string) =>
+    value.replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string)
+    );
+
+  const render = (results: any[], query: string) => {
+    if (!query.trim()) {
+      list.innerHTML = "";
+      return;
+    }
+    if (!results.length) {
+      list.innerHTML = `<p class="docs-search-empty">No results for “${escapeHtml(query)}”</p>`;
+      return;
+    }
+
+    list.innerHTML = results
+      .map(
+        (r) => `<a class="docs-search-result" href="${escapeHtml(r.url)}">
+          <span class="docs-search-result-title">${escapeHtml(r.title)}</span>
+          ${r.heading ? `<span class="docs-search-result-section">${escapeHtml(r.heading)}</span>` : ""}
+          <span class="docs-search-result-excerpt">${escapeHtml(r.excerpt || "")}</span>
+        </a>`
+      )
+      .join("");
+
+    activeIndex = 0;
+    highlight();
+  };
+
+  let debounce: any;
+  input.addEventListener("input", () => {
+    clearTimeout(debounce);
+    const query = input.value;
+    // Results can arrive out of order; only the newest query may paint.
+    const token = ++queryToken;
+    debounce = setTimeout(async () => {
+      const results = await prss.search(query, 8);
+      if (token === queryToken) render(results, query);
+    }, 120);
+  });
+
+  document.querySelectorAll("[data-search-open]").forEach((el) =>
+    el.addEventListener("click", open)
+  );
+  document.querySelectorAll("[data-search-close]").forEach((el) =>
+    el.addEventListener("click", close)
+  );
+
+  document.addEventListener("keydown", (e) => {
+    const typingElsewhere = /^(input|textarea|select)$/i.test(
+      (e.target as HTMLElement)?.tagName || ""
+    ) || (e.target as HTMLElement)?.isContentEditable;
+
+    if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") || (e.key === "/" && !typingElsewhere)) {
+      e.preventDefault();
+      open();
+      return;
+    }
+
+    if (dialog.hidden) return;
+
+    if (e.key === "Escape") {
+      close();
+    } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      const items = options();
+      if (!items.length) return;
+      e.preventDefault();
+      activeIndex = (activeIndex + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+      highlight();
+    } else if (e.key === "Enter") {
+      const target = options()[activeIndex];
+      if (target) {
+        e.preventDefault();
+        window.location.href = target.getAttribute("href") || "";
+      }
+    }
+  });
+};
+
 ready(() => {
   initThemeToggle();
   initSidebar();
   initCodeCopy();
   initBlockCopy();
   initToc();
+  initSearch();
   // Settle the ad's slot before Carbon's script is injected — moving the
   // container mid-load detaches the script and the ad never renders.
   initAsidePlacement();
@@ -300,4 +420,4 @@ ready(() => {
   initHeroParallax();
 });
 
-(window as any).PRSSDocsTheme = { initCodeCopy, initBlockCopy, initToc, initCarbonAd, initAsidePlacement, initHeroParallax };
+(window as any).PRSSDocsTheme = { initCodeCopy, initBlockCopy, initToc, initCarbonAd, initAsidePlacement, initHeroParallax, initSearch };

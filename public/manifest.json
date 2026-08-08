@@ -5,6 +5,7 @@
   "isSSR": true,
   "combinedCSS": true,
   "clientScript": true,
+  "search": true,
   "siteVars": {
     "logoImageUrl": {
       "type": "image",
