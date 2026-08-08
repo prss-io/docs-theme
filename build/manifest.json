@@ -1,7 +1,7 @@
 {
   "name": "@prss/docs-theme",
   "title": "Docs",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": "Francisco Hodge",
   "homepage": "https://github.com/prss-io/docs-theme",
   "description": "Documentation theme for PRSS with an automatic sidebar, on-this-page navigation, copyable code blocks and a light/dark toggle.",
