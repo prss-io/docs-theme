@@ -12,6 +12,10 @@ interface DocsLayoutProps {
   title?: string;
   showToc?: boolean;
   showSidebar?: boolean;
+  /** Drop the right rail entirely, ads included, for pages that need the width. */
+  showAside?: boolean;
+  /** Pin the colour theme, for pages whose content only reads one way. */
+  lockTheme?: "dark" | "light";
   children: ReactNode;
 }
 
@@ -27,6 +31,8 @@ const DocsLayout = ({
   title,
   showToc = true,
   showSidebar = true,
+  showAside = true,
+  lockTheme,
   children
 }: DocsLayoutProps) => {
   const vars = (PRSS.getProp("vars") as any) || {};
@@ -37,7 +43,7 @@ const DocsLayout = ({
 
   const { logoImageUrl, sidebarMenu, headerMenu, githubUrl, footerLeft, footerRight, warningHtml, contentFooterHtml, footerCta } = vars;
   // Ad / sponsor slot (compatible with slate/press/landing var names).
-  const asideAd = vars.asideHtml || vars.sidebarAsideHtml;
+  const asideAd = showAside ? (vars.asideHtml || vars.sidebarAsideHtml) : null;
   // The right rail carries the TOC (docs pages) and/or the ad. Pages with neither
   // collapse it via client.js (.rail-empty) so nothing looks barren.
   const showRail = showToc || !!asideAd;
@@ -156,7 +162,20 @@ const DocsLayout = ({
   );
 
   return (
-    <div className={cx("docs-theme", className)} data-theme="dark">
+    <div
+      className={cx("docs-theme", className)}
+      data-theme={lockTheme || "dark"}
+      {...(lockTheme ? { "data-theme-locked": "" } : {})}
+    >
+      {/* Runs while the parser is still inside this element, so a reader whose
+          preference is light never sees the dark default painted first. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "try{var r=document.currentScript.parentElement,s=localStorage.getItem('docs-theme');" +
+            "if(!r.hasAttribute('data-theme-locked')&&(s==='light'||s==='dark'))r.setAttribute('data-theme',s)}catch(e){}",
+        }}
+      />
       <header className="docs-header">
         <div className="docs-header-inner">
           <div className="docs-header-left">
@@ -217,6 +236,7 @@ const DocsLayout = ({
               data-theme-toggle
               aria-label="Toggle color theme"
               title="Toggle theme"
+              hidden={!!lockTheme}
             >
               <svg className="docs-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />

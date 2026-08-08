@@ -18,6 +18,10 @@ const initThemeToggle = () => {
   const root = document.querySelector<HTMLElement>(".docs-theme");
   if (!root) return;
 
+  // Some pages pin their theme because their content only reads one way; the
+  // stored preference must not override that.
+  if (root.hasAttribute("data-theme-locked")) return;
+
   const stored = (() => {
     try {
       return localStorage.getItem("docs-theme");
@@ -237,6 +241,17 @@ const initAsidePlacement = () => {
   const apply = () => {
     const target = mq.matches ? inline : rail;
     if (aside.parentElement !== target) target.appendChild(aside);
+    alignToDemo();
+  };
+
+  // A demo page leads with a heading the rail has no equivalent for, so without
+  // this the ad floats level with the title instead of with the demo.
+  const alignToDemo = () => {
+    const stage = document.querySelector<HTMLElement>(".page-demo .docs-demo-body > *");
+    aside.style.marginTop = "";
+    if (!stage || mq.matches || aside.parentElement !== rail) return;
+    const delta = stage.getBoundingClientRect().top - aside.getBoundingClientRect().top;
+    if (delta > 0) aside.style.marginTop = `${Math.round(delta)}px`;
   };
 
   apply();
@@ -406,13 +421,185 @@ const initSearch = () => {
   });
 };
 
+/* ---- Back link (editor pages) ---- */
+const initBackLink = () => {
+  document.querySelectorAll<HTMLAnchorElement>("[data-docs-back]").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      // Going back beats the parent page when the reader came from elsewhere on
+      // the site — it returns them to the exact demo they were reading. The href
+      // stays as the fallback for a fresh tab or an external referrer.
+      let sameSite = false;
+      try {
+        sameSite = !!document.referrer && new URL(document.referrer).origin === window.location.origin;
+      } catch {
+        sameSite = false;
+      }
+
+      if (sameSite && document.referrer !== window.location.href && history.length > 1) {
+        e.preventDefault();
+        history.back();
+      }
+    });
+  });
+};
+
+/* ---- Editor pages: repository link and sandbox switching ---- */
+
+/**
+ * Read which repository an embed is showing.
+ *
+ * Everything here is derived from the rendered iframe rather than from query
+ * parameters, so the theme stays independent of whatever convention a site uses
+ * to build its embed URLs. Only the two known sandbox hosts are recognised, and
+ * the repository link is rebuilt from a strict owner/repo match rather than
+ * following anything supplied in the page.
+ */
+const readEmbed = (src: string) => {
+  let url: URL;
+  try {
+    url = new URL(src, window.location.href);
+  } catch {
+    return null;
+  }
+
+  const host = url.hostname.replace(/^www\./, "");
+  const provider =
+    host === "codesandbox.io" ? "codesandbox" : host === "stackblitz.com" ? "stackblitz" : null;
+  if (!provider) return null;
+
+  const match = url.pathname.match(
+    /\/github\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)(\/tree\/[A-Za-z0-9_./-]*)?/
+  );
+  if (!match) return null;
+
+  return { provider, owner: match[1], repo: match[2], tree: match[3] || "" };
+};
+
+const embedUrlFor = (provider: string, e: { owner: string; repo: string; tree: string }) => {
+  const path = `${e.owner}/${e.repo}${e.tree}`;
+  return provider === "stackblitz"
+    ? `https://stackblitz.com/github/${path}?embed=1`
+    : `https://codesandbox.io/embed/github/${path}?autoresize=1&fontsize=14&hidenavigation=1`;
+};
+
+const initEditor = () => {
+  const stage = document.querySelector<HTMLElement>(".docs-editor-stage");
+  const actions = document.querySelector<HTMLElement>("[data-editor-actions]");
+  if (!stage || !actions) return;
+
+  const label = { codesandbox: "CodeSandbox", stackblitz: "StackBlitz" };
+
+  const render = (iframe: HTMLIFrameElement) => {
+    const embed = readEmbed(iframe.getAttribute("src") || "");
+    if (!embed) return;
+
+    const other = embed.provider === "stackblitz" ? "codesandbox" : "stackblitz";
+    actions.innerHTML = `
+      <a class="docs-editor-action" href="https://github.com/${embed.owner}/${embed.repo}" target="_blank" rel="noopener noreferrer">
+        <span aria-hidden="true">↗</span> ${embed.owner}/${embed.repo}
+      </a>
+      <button type="button" class="docs-editor-action" data-editor-switch>Open in ${label[other]}</button>
+    `;
+
+    actions.querySelector("[data-editor-switch]")?.addEventListener("click", () => {
+      iframe.setAttribute("src", embedUrlFor(other, embed));
+      render(iframe);
+    });
+  };
+
+  const find = () => stage.querySelector("iframe");
+
+  const existing = find();
+  if (existing) {
+    render(existing as HTMLIFrameElement);
+    return;
+  }
+
+  // Page content injects the embed after load, so wait for it to appear.
+  const observer = new MutationObserver(() => {
+    const iframe = find();
+    if (iframe) {
+      observer.disconnect();
+      render(iframe as HTMLIFrameElement);
+    }
+  });
+  observer.observe(stage, { childList: true, subtree: true });
+  setTimeout(() => observer.disconnect(), 15000);
+};
+
+/**
+ * A demo page's list of other demos should not compete with the demo itself, so
+ * a long one stays folded behind a fade until someone asks to see the rest.
+ */
+const initDemoList = () => {
+  const list = document.querySelector<HTMLElement>(".page-demo .demo-list");
+  const items = list?.querySelector<HTMLElement>("ul");
+  if (!list || !items) return;
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "docs-demo-more";
+
+  const sync = () => {
+    const open = list.hasAttribute("data-open");
+    button.textContent = open ? "Show fewer" : "Show all";
+    button.setAttribute("aria-expanded", String(open));
+  };
+
+  const measure = () => {
+    if (list.hasAttribute("data-open")) return;
+    list.setAttribute("data-foldable", "");
+    if (items.scrollHeight <= items.clientHeight + 4) {
+      list.removeAttribute("data-foldable");
+      button.remove();
+    } else if (!button.isConnected) {
+      list.appendChild(button);
+      sync();
+    }
+  };
+
+  button.addEventListener("click", () => {
+    list.toggleAttribute("data-open");
+    sync();
+  });
+
+  measure();
+  window.addEventListener("resize", measure);
+
+  // The list is filled by the page's own script, which may run after this.
+  const observer = new MutationObserver(measure);
+  observer.observe(items, { childList: true });
+  setTimeout(() => observer.disconnect(), 15000);
+};
+
+/** Reveals the rail scrollbars while they are being scrolled, then fades them out again. */
+const initRailScrollbars = () => {
+  const rails = document.querySelectorAll<HTMLElement>(".docs-sidebar, .docs-toc-rail");
+  rails.forEach((rail) => {
+    let timer = 0;
+    rail.addEventListener(
+      "scroll",
+      () => {
+        rail.classList.add("is-scrolling");
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => rail.classList.remove("is-scrolling"), 700);
+      },
+      { passive: true }
+    );
+  });
+};
+
 ready(() => {
   initThemeToggle();
   initSidebar();
+  initRailScrollbars();
   initCodeCopy();
   initBlockCopy();
   initToc();
   initSearch();
+  initBackLink();
+  initEditor();
+  initDemoList();
   // Settle the ad's slot before Carbon's script is injected — moving the
   // container mid-load detaches the script and the ad never renders.
   initAsidePlacement();
@@ -420,4 +607,4 @@ ready(() => {
   initHeroParallax();
 });
 
-(window as any).PRSSDocsTheme = { initCodeCopy, initBlockCopy, initToc, initCarbonAd, initAsidePlacement, initHeroParallax, initSearch };
+(window as any).PRSSDocsTheme = { initCodeCopy, initBlockCopy, initToc, initCarbonAd, initAsidePlacement, initHeroParallax, initSearch, initBackLink, initEditor, initDemoList, initRailScrollbars };

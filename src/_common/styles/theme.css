@@ -309,6 +309,126 @@ body.docs-search-open { overflow: hidden; }
 
 .docs-search-empty { margin: 0; padding: 20px 16px; color: var(--text-muted); font-size: 0.9rem; }
 
+/* ---- Editor pages (embedded sandboxes) ---- */
+/* The reading-width caps are written as `.docs-theme` + `:not()` selectors, so
+   undoing them takes at least the same specificity. An editor is not prose and
+   gets whatever width is left beside the ad rail. */
+.docs-theme.page-editor .docs-shell,
+.docs-theme.page-editor .docs-shell.no-sidebar,
+.docs-theme.page-editor .docs-shell.no-sidebar:not(.no-toc),
+.docs-theme.page-editor .docs-shell.no-sidebar.no-toc {
+  max-width: none;
+  padding: 0 20px;
+  gap: 24px;
+}
+.docs-theme.page-editor .docs-main,
+.docs-theme.page-editor .docs-article { max-width: none; padding: 0; }
+/* Nothing should sit flush against the bottom of the window. */
+.docs-theme.page-editor .docs-main { padding-bottom: 32px; }
+
+.docs-editor {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--docs-radius);
+  /* `clip` rather than `hidden`: it trims the embed to the rounded corners
+     without becoming a scroll container, which would break the sticky bar. */
+  overflow: clip;
+  /* Stop short of the full viewport so what follows peeks above the fold and
+     the page reads as scrollable. */
+  height: calc(100vh - var(--docs-header-h) - 76px);
+}
+
+.docs-editor-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 0 0 auto;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  /* Keeps the way out reachable once the embed has scrolled past. */
+  position: sticky;
+  top: var(--docs-header-h);
+  z-index: 5;
+}
+
+.docs-editor-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--docs-radius-sm);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.docs-editor-back:hover { background: var(--hover); color: var(--text); border-color: var(--border-strong); }
+
+.docs-editor-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text); }
+
+/* Pushed to the right of the bar; wraps away on narrow viewports. */
+.docs-editor-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+.docs-editor-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--docs-radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.82rem;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.docs-editor-action:hover { background: var(--hover); color: var(--text); border-color: var(--border-strong); }
+
+.docs-editor-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.docs-editor-stage > *,
+.docs-editor-stage .showcase-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+/* Embeds are injected by page content with a fixed inline height (commonly
+   500px). Only !important can beat an inline style, and the whole point of this
+   template is that the editor gets the viewport. */
+.docs-editor-stage iframe {
+  flex: 1 1 auto;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  display: block;
+}
+
+/* A phone cannot give a sandbox a usable share of a short viewport, so let the
+   page scroll instead of squeezing it. */
+@media (max-width: 700px) {
+  .docs-editor { height: auto; }
+  .docs-editor-stage iframe { height: 70vh !important; }
+  .docs-editor-bar { flex-wrap: wrap; }
+  .docs-editor-actions { margin-left: 0; width: 100%; }
+}
+
 .docs-theme-toggle .docs-icon-sun { display: none; }
 .docs-theme[data-theme="light"] .docs-theme-toggle .docs-icon-moon { display: none; }
 .docs-theme[data-theme="light"] .docs-theme-toggle .docs-icon-sun { display: block; }
@@ -347,10 +467,35 @@ body.docs-search-open { overflow: hidden; }
   overflow-y: auto;
   overflow-x: hidden;
   padding: 24px 8px 40px 0;
-  scrollbar-width: thin;
 }
-.docs-sidebar::-webkit-scrollbar { width: 8px; }
-.docs-sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+
+/* Overlay-style scrollbars for the two rails: the track's width is always
+   reserved (so revealing the thumb never reflows the nav) but the thumb only
+   fades in while the rail is actually being scrolled. */
+.docs-sidebar,
+.docs-toc-rail {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.docs-sidebar:focus-within,
+.docs-sidebar.is-scrolling,
+.docs-toc-rail:focus-within,
+.docs-toc-rail.is-scrolling { scrollbar-color: var(--border-strong) transparent; }
+
+.docs-sidebar::-webkit-scrollbar,
+.docs-toc-rail::-webkit-scrollbar { width: 8px; }
+.docs-sidebar::-webkit-scrollbar-track,
+.docs-toc-rail::-webkit-scrollbar-track { background: transparent; }
+.docs-sidebar::-webkit-scrollbar-thumb,
+.docs-toc-rail::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 8px;
+  transition: background-color 0.25s ease;
+}
+.docs-sidebar:focus-within::-webkit-scrollbar-thumb,
+.docs-sidebar.is-scrolling::-webkit-scrollbar-thumb,
+.docs-toc-rail:focus-within::-webkit-scrollbar-thumb,
+.docs-toc-rail.is-scrolling::-webkit-scrollbar-thumb { background-color: var(--border-strong); }
 
 /* Section header: names the docs product the current page belongs to. */
 .docs-theme .docs-nav-section {
@@ -406,7 +551,7 @@ a.docs-nav-section:hover { color: var(--accent); }
   margin: 0 0 28px;
 }
 
-.docs-prose { font-size: 15.5px; color: var(--text); }
+.docs-prose { font-size: 17px; color: var(--text); }
 .docs-prose > * { margin-top: 0; }
 .docs-prose p { margin: 0 0 18px; color: var(--text); }
 .docs-prose a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
@@ -420,8 +565,10 @@ a.docs-nav-section:hover { color: var(--accent); }
 .docs-prose h2 { font-size: 24px; margin: 44px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
 .docs-prose h3 { font-size: 19px; margin: 32px 0 12px; }
 .docs-prose h4 { font-size: 16px; margin: 24px 0 10px; }
-.docs-prose ul, .docs-prose ol { margin: 0 0 18px; padding-left: 24px; }
-.docs-prose li { margin: 6px 0; }
+/* :where() keeps list defaults at element specificity so any component/widget
+   CSS (which always carries a class) overrides them without !important. */
+:where(.docs-prose) ul, :where(.docs-prose) ol { margin: 0 0 18px; padding-left: 24px; }
+:where(.docs-prose) li { margin: 6px 0; }
 .docs-prose blockquote {
   margin: 0 0 18px;
   padding: 14px 18px;
@@ -632,8 +779,6 @@ a.docs-nav-section:hover { color: var(--accent); }
 .docs-footer-cta a { color: var(--accent); font-weight: 600; }
 
 /* demo / embed page */
-.page-demo .docs-shell.no-sidebar.no-toc { max-width: 1160px; }
-.docs-demo-intro { margin-bottom: 8px; }
 .docs-demo-frame {
   width: 100%;
   margin-top: 24px;
@@ -710,7 +855,7 @@ a.docs-nav-section:hover { color: var(--accent); }
   display: block;
   padding: 4px 0 4px 12px;
   margin: 1px 0;
-  font-size: 13px;
+  font-size: 13.5px;
   color: var(--text-muted);
   border-left: 2px solid var(--border);
   transition: color 0.15s, border-color 0.15s;
@@ -987,7 +1132,7 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
   display: block;
   padding: 7px 10px;
   border-radius: 7px;
-  font-size: 15px;
+  font-size: 15.5px;
   color: var(--text-muted);
   line-height: 1.5;
   overflow-wrap: anywhere;
@@ -1029,7 +1174,7 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
   margin: 4px 0 18px;
   color: var(--text);
 }
-.docs-theme .docs-prose { color: var(--text-muted); font-size: 15.5px; line-height: 1.7; }
+.docs-theme .docs-prose { color: var(--text-muted); font-size: 17px; line-height: 1.75; }
 .docs-theme .docs-prose h2 {
   margin: 44px 0 14px;
   font-size: 22px;
@@ -1054,10 +1199,10 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
   transition: border-color 0.12s ease;
 }
 .docs-theme .docs-prose a:hover { border-bottom-color: var(--accent); }
-.docs-theme .docs-prose ul,
-.docs-theme .docs-prose ol { margin: 0 0 16px; padding-left: 22px; }
-.docs-theme .docs-prose li { margin: 6px 0; }
-.docs-theme .docs-prose li::marker { color: var(--text-faint); }
+:where(.docs-theme) :where(.docs-prose) ul,
+:where(.docs-theme) :where(.docs-prose) ol { margin: 0 0 16px; padding-left: 22px; }
+:where(.docs-theme) :where(.docs-prose) li { margin: 6px 0; }
+:where(.docs-theme) :where(.docs-prose) li::marker { color: var(--text-faint); }
 
 /* Inline code */
 .docs-theme .docs-prose :not(pre) > code {
@@ -1111,7 +1256,7 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
 .docs-theme .docs-copy-btn.is-copied { color: #10b981; border-color: color-mix(in srgb, #10b981 40%, transparent); }
 
 /* Tables */
-.docs-theme .docs-prose table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+.docs-theme .docs-prose table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 15px; }
 .docs-theme .docs-prose thead th { border-bottom: 1px solid var(--border-strong); }
 .docs-theme .docs-prose th {
   text-align: left;
@@ -1167,7 +1312,7 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
   line-height: 1.4;
   transition: color 0.12s ease, border-color 0.12s ease;
 }
-.docs-theme .docs-toc-nav a.lvl-3 { padding-left: 26px; font-size: 12.5px; }
+.docs-theme .docs-toc-nav a.lvl-3 { padding-left: 26px; font-size: 13px; }
 .docs-theme .docs-toc-nav a:hover { color: var(--text); }
 .docs-theme .docs-toc-nav a.is-active { color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
 
@@ -1232,8 +1377,8 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
 .docs-theme .docs-post-media { aspect-ratio: 16 / 9; overflow: hidden; background: var(--bg-code); }
 .docs-theme .docs-post-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .docs-theme .docs-post-card-body { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; }
-.docs-theme .docs-post-card-title { margin: 0; font-size: 16px; font-weight: 650; color: var(--text); letter-spacing: -0.01em; }
-.docs-theme .docs-post-card-excerpt { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-muted); }
+.docs-theme .docs-post-card-title { margin: 0; font-size: 17px; font-weight: 650; color: var(--text); letter-spacing: -0.01em; }
+.docs-theme .docs-post-card-excerpt { margin: 0; font-size: 15px; line-height: 1.6; color: var(--text-muted); }
 .docs-theme .docs-post-card-date { font-size: 12.5px; color: var(--text-faint); }
 
 /* Article featured image + meta */
@@ -1280,7 +1425,7 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
   color: var(--accent);
   background: var(--accent-soft);
 }
-.docs-theme .docs-showcase-excerpt { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-muted); }
+.docs-theme .docs-showcase-excerpt { margin: 0; font-size: 15px; line-height: 1.6; color: var(--text-muted); }
 
 /* ============================ Richness layer ============================ */
 /* Brand mark picks up the accent gradient */
@@ -1754,6 +1899,56 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
 .docs-theme .docs-prose .btn-outline-dark { background: transparent; }
 .docs-theme .docs-prose .btn-outline-dark:hover { color: var(--accent) !important; border-color: var(--accent); background: var(--accent-soft); }
 
+/* A section page that lists its child pages ships a plain `ul.sc-menu`. Sites
+   often hand-roll columns on it with a percentage width, which leaves the list
+   indented by the list gutter and misaligned with the text above. Take it over
+   as a link grid: aligned to the content edge, and responsive by itself. */
+.docs-theme .docs-prose ul.sc-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 10px;
+  margin: 18px 0 26px;
+  padding: 0;
+  list-style: none;
+}
+.docs-theme .docs-prose ul.sc-menu > li {
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+.docs-theme .docs-prose ul.sc-menu > li::marker { content: ""; }
+.docs-theme .docs-prose ul.sc-menu > li > a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--docs-radius);
+  background: var(--bg-elevated);
+  background-image: none;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.docs-theme .docs-prose ul.sc-menu > li > a::after {
+  content: "\2192";
+  margin-left: auto;
+  color: var(--text-faint);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.docs-theme .docs-prose ul.sc-menu > li > a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+.docs-theme .docs-prose ul.sc-menu > li > a:hover::after {
+  color: var(--accent);
+  transform: translateX(2px);
+}
+
 /* link-list block chips (layoutOrientation:"inline") should read like the neutral
    .btn-outline-dark demo buttons — the theme's own `.docs-prose a` accent rule
    would otherwise tint them indigo. Match `.inline-demo-links` box + buttons exactly. */
@@ -1844,9 +2039,257 @@ html { scrollbar-gutter: stable; overflow-y: scroll; }
 .docs-theme.page-home .docs-header-inner,
 .docs-theme.page-blog .docs-header-inner,
 .docs-theme.page-post .docs-header-inner,
-.docs-theme.page-demo .docs-header-inner,
 .docs-theme.page-showcase .docs-header-inner { max-width: 1120px; }
 
 /* #3 Ad / sponsor iframe: give it room and centre it so it isn't squished. */
 .docs-theme .docs-aside { padding: 12px; overflow: hidden; }
 .docs-theme .docs-aside iframe { display: block; margin: 0 auto; border: 0; }
+
+/* ======================= Demo pages ======================= */
+/* A demo page exists to be touched, so the widget it ships keeps running exactly
+   as written — these rules only dress the containers around it. The demo gets a
+   stage, the platform switcher reads as a toolbar, and the "more demos" set
+   becomes a browsable grid instead of a wall of identical buttons. */
+
+/* A demo sizes its own stage (a compact widget and a full-width one want very
+   different room), so this page gets a wider column than the rest of the site
+   and the stage keeps whatever width the demo asked for. */
+.docs-theme.page-demo .docs-header-inner,
+.docs-theme.page-demo .docs-shell.no-sidebar { max-width: 1360px; }
+
+.docs-theme .docs-demo-head { margin: 2px 0 24px; }
+/* A demo page has no sidebar, so this link is the only way back to the docs —
+   hence full text weight and colour rather than the usual muted breadcrumb. */
+.docs-theme .docs-demo-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  background-image: none;
+  transition: color 0.15s ease;
+}
+.docs-theme .docs-demo-back:hover { color: var(--accent); }
+.docs-theme .docs-demo-back > span { transition: transform 0.15s; }
+.docs-theme .docs-demo-back:hover > span { transform: translateX(-3px); }
+.docs-theme .docs-demo-title {
+  margin: 12px 0 0;
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.docs-theme .docs-demo-title a { color: var(--accent); }
+
+/* The stage is only a frame: the widget supplies its own surfaces, so anything
+   more than a thin white border reads as a bezel around someone else's device. */
+.docs-theme.page-demo .docs-demo-body .demo-preview,
+.docs-theme.page-demo .docs-demo-body .preview2 {
+  /* content-box so the frame's padding is added to whatever width the demo set
+     for itself — under border-box it eats into it and the parts wrap. */
+  box-sizing: content-box;
+  margin: 0 auto;
+  padding: 5px;
+  gap: 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--docs-radius);
+  background: #fff;
+}
+/* A demo that dresses its own device (a phone shell, a numeric pad) also sizes
+   it, so the frame wraps around it rather than leaving a wide white margin. A
+   plain demo is fluid and keeps filling the column. */
+.docs-theme.page-demo .docs-demo-body .preview2:has(.simple-keyboard-preview:not([class="simple-keyboard-preview"])) {
+  width: fit-content;
+}
+
+/* The widget's own input surface, treated as the screen above the keys. It stays
+   light with the default key caps so the two read as one device on any theme.
+ *
+ * These four selectors are deliberately kept at two classes — no `.docs-theme`
+ * prefix. A demo that dresses its own widget (a phone shell, a numeric pad, a
+ * keyboard split into sections) styles the same elements at the same weight
+ * from the page's inline <style>, which the browser resolves last. Raise these
+ * and the theme silently overwrites every themed demo. */
+.page-demo .simple-keyboard-preview {
+  width: 100%;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  background: #fff;
+}
+.page-demo .input {
+  color: #1a1a1e;
+  min-height: 44px;
+  font-size: 17px;
+  line-height: 1.5;
+  resize: none;
+}
+.page-demo .input::placeholder { color: #8e8fa8; }
+/* Key caps take their colour by inheritance, so a dark page would render the
+   default light theme's letters nearly invisible. Set it on the root only —
+   demos that ship their own key colours still win on the button itself. */
+.page-demo .simple-keyboard {
+  color: #1a1a1e;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+/* The widget mounts after the page loads and its container ships empty, so hold
+   roughly its height to stop everything below it jumping once it appears. */
+.page-demo .simple-keyboard:empty { min-height: 230px; }
+
+/* Toolbar under the stage: "open this demo in …". */
+.docs-theme.page-demo .docs-demo-body .demo-links {
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0;
+  border: 0;
+}
+.docs-theme.page-demo .docs-demo-body .demo-links > span {
+  margin: 0 8px 0 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+/* inline-block rather than the base rule's flex, because `::first-letter` only
+   applies to block containers — and only the first letter, so an acronym label
+   like "JS (npm)" survives intact where `capitalize` would mangle it. */
+.docs-theme.page-demo .docs-demo-body .demo-links a {
+  display: inline-block;
+  margin-right: 0;
+  line-height: 42px;
+  text-align: center;
+}
+.docs-theme.page-demo .docs-demo-body .demo-links a::first-letter { text-transform: uppercase; }
+/* Same shape and treatment as the hero buttons, so a demo's toolbar belongs to
+   the same family as the rest of the site. */
+.docs-theme.page-demo .docs-demo-body .btn-outline-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--docs-radius);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  background-image: none;
+  text-shadow: none;
+  transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.docs-theme.page-demo .docs-demo-body .btn-outline-dark:hover {
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+/* The rest of the set. These are short names, so they belong in a compact picker
+   under a divider — folded behind a fade so they never outweigh the demo. */
+.docs-theme.page-demo .docs-demo-body .demo-list {
+  width: auto;
+  margin: 34px 0 0;
+  padding: 26px 0 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: none;
+}
+.docs-theme.page-demo .docs-demo-body .demo-list > span {
+  display: block;
+  margin: 0;
+  padding: 0 !important;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.docs-theme.page-demo .docs-demo-body .demo-list ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0 !important;
+  padding: 0;
+  list-style: none;
+}
+.docs-theme.page-demo .docs-demo-body .demo-list ul > a {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--docs-radius-sm);
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  font-weight: 400;
+  box-shadow: none;
+  /* Most entries are single words, so this alone makes them read as names. */
+  text-transform: capitalize;
+}
+/* No lift here: these sit flush with the folded list's clipped edge, and a
+   secondary picker should stay quieter than the buttons above it. */
+.docs-theme.page-demo .docs-demo-body .demo-list ul > a:hover {
+  transform: none;
+  border-color: var(--border-strong);
+  background: var(--hover);
+  color: var(--text);
+}
+.docs-theme.page-demo .docs-demo-body .demo-list ul > a.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Folded state. The mask fades the last row out rather than cutting it, which
+   reads as "there is more" without a scrollbar or a hard edge. */
+.docs-theme.page-demo .docs-demo-body .demo-list[data-foldable] ul {
+  max-height: 124px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+}
+.docs-theme.page-demo .docs-demo-body .demo-list[data-foldable][data-open] ul {
+  max-height: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.docs-theme .docs-demo-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.docs-theme .docs-demo-more::after { content: "\25be"; }
+.docs-theme .demo-list[data-open] .docs-demo-more::after { content: "\25b4"; }
+.docs-theme .docs-demo-more:hover { text-decoration: underline; }
+
+/* Callout boxes on demo pages inherit the theme instead of a hard black border. */
+.docs-theme.page-demo .docs-demo-body .dcta {
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--docs-radius);
+  background: var(--bg-code);
+}
+
+@media (max-width: 700px) {
+  .docs-theme .docs-demo-title { font-size: 26px; }
+}
+
+
+
+
